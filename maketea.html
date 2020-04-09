@@ -8,13 +8,22 @@
 	<h1>Make Tea</h1>
 
 <script type="text/javascript">
-	/**
-	 * Features
-	 * - Type (milk tea, black tea)
-	 * - Ingredients + Quantity (sugar, ginger)
-	 * - Cups
-	 * - Cup Size
-	 */
+/**
+ * Features
+ * - Type (milk tea, black tea)
+ * - Ingredients + Quantity (sugar, ginger)
+ * - Cups
+ * - Cup Size
+ */
+(function() {
+
+	var ingredientsList = [
+		'water',
+		'milk',
+		'ice',
+		'sugar',
+		'ginger'
+	];
 
 	 makeTea({
 	 	type: "milk",
@@ -57,6 +66,19 @@
 	 	}
 	 }
 
+	 function mergeObjects (mainObject, objectToBeMergedInMain ) {
+	 	for ( var i in objectToBeMergedInMain ) {
+	 		if ( typeof objectToBeMergedInMain[i] === 'object' ) {
+	 			for ( var j in objectToBeMergedInMain[i] ) {
+	 				mainObject[i][j] = objectToBeMergedInMain[i][j];
+	 			}
+	 		} else {
+		 		mainObject[i] = objectToBeMergedInMain[i];
+	 		}
+	 	}
+	 	return mainObject;
+	 }
+
 	 function makeTea ( requirements ) {
 
 	 	console.log("Making Tea");
@@ -85,15 +107,7 @@
 	 	var ingredientsPercentage = 0.2;
 
 	 	// Update requirements
-	 	for ( var i in requirements ) {
-	 		if ( typeof requirements[i] === 'object' ) {
-	 			for ( var j in requirements[i] ) {
-	 				defaults[i][j] = requirements[i][j];
-	 			}
-	 		} else {
-		 		defaults[i] = requirements[i];
-	 		}
-	 	}
+	 	defaults = mergeObjects(defaults, requirements);
 
  		if ( defaults.ingredients.ice === "yes" ) {
  			if ( defaults.type == "black" ) {
@@ -165,6 +179,8 @@
 	function toFixedIfNecessary( value, dp ){
 		return +parseFloat(value).toFixed( dp );
 	}
+
+})();
 </script>
 
 </body>
