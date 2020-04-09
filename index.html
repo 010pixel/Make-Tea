@@ -1,0 +1,456 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hello Drink Maker!</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <body>
+    <style type="text/css">
+      h1 {
+        text-transform: uppercase;
+      }
+      .cup {
+        height: 100px;
+        border: 2px solid #999;
+        position: relative;
+        max-width: 100px;
+        box-shadow: 2px 2px 10px #ccc;
+      }
+      .cup:after {
+        content: '';
+        display: block;
+        border: 5px solid #000;
+        position: absolute;
+        left: 99%;
+        width: 40px;
+        max-width: 60%;
+        height: 50px;
+        border-radius: 40%;
+      }
+      .cup .cup-content {
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      .cup .cup-content .ice {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 100px;
+        border: 1px solid #f00;
+      }
+      .cup-beverage {
+        height: 10%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      .cube {
+        position:absolute; left:50%; top:50%;
+        width:100px; height:100px;
+        transform-style:preserve-3d;
+        transform:rotateX(-30deg) rotateY(35deg) translate(-50%, -50%);
+      }
+      .cube > div {
+        position:absolute; left:50%; top:50%;
+        transform-style:preserve-3d;
+      }
+      .cube > div > div {
+        position:absolute; left:50%; top:50%;
+        width:100px; height:100px; border-radius:calc(100px/12);
+        background:rgba(221,221,221,0.2);
+        background:linear-gradient(rgba(237,237,237,0.2),rgba(153,153,153,0.1));
+        box-shadow:0 0 4px rgba(255,255,255,0.2),inset 0 0 4px rgba(255,255,255,0.2);
+      }
+      .cube > div > div:nth-child(1) {transform:translate3d(0,0,50px);}
+      .cube > div > div:nth-child(2) {transform:rotateX(90deg) translate3d(0,0,50px);}
+      .cube > div > div:nth-child(3) {transform:rotateX(180deg) translate3d(0,0,50px);}
+      .cube > div > div:nth-child(4) {transform:rotateX(270deg) translate3d(0,0,50px);}
+      .cube > div > div:nth-child(5) {transform:rotateY(90deg) translate3d(0,0,50px);}
+      .cube > div > div:nth-child(6) {transform:rotateY(-90deg) translate3d(0,0,50px);}      
+    </style>
+
+    <div id="beverage-maker" class="container" v-show=" !processing " style="display: none;">
+{{formConfig}}
+      <div class="columns">
+        <div class="column">
+
+          <div class="form-fields" v-if=" formConfig ">
+
+            <div class="field">
+              <label class="label">Drink</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.drink">
+                    <option value="">Select</option>
+                    <option v-for="(value, key) in formConfig.drinkOptions" v-bind:value="key">
+                      {{ value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if=" settings.drink ">
+              <label class="label">Total Cup(s)</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.totalCups">
+                    <option value="">Select</option>
+                    <option v-for="num in [1,2,3,4,5,6,7,8,9,10]" v-bind:value="num">
+                      {{ num }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if=" settings.drink ">
+              <label class="label">Cup Size</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.cupSize">
+                    <option value="">Select</option>
+                    <option v-for="num in [150,200,250,300]" v-bind:value="num">
+                      {{ num }}ml
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if=" settings.drink ">
+              <label class="label">Ice?</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.ice">
+                    <option value="">Select</option>
+                    <option v-for="(value, key) in formConfig.iceOptions" v-bind:value="key">
+                      {{ value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if=" settings.drink ">
+              <label class="label">Milk</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.milk">
+                    <option value="">Select</option>
+                    <option v-for="(value, key) in formConfig.milkOptions" v-bind:value="key">
+                      {{ value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if=" settings.drink ">
+              <label class="label">Sugar</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.sugar">
+                    <option value="">Select</option>
+                    <option v-for="(value, key) in formConfig.sugarOptions" v-bind:value="key">
+                      {{ value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if=" settings.drink == 'tea' ">
+              <label class="label">Ginger</label>
+              <div class="control">
+                <div class="select">
+                  <select v-model="settings.ginger">
+                    <option value="">Select</option>
+                    <option v-for="(value, key) in formConfig.gingerOptions" v-bind:value="key">
+                      {{ value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+        </div>
+        <div class="column">
+          <hr />
+          {{ settings }}
+          <hr />
+          <button class="button is-primary is-rounded">
+            <span>Make</span>
+            <span class="icon"><i class="fas fa-flask"></i></span>
+          </button>
+          <hr />
+          <div class="columns">
+            <div class="column" v-for=" cup in settings.totalCups ">
+              <div class="cup">
+                <div class="cup-content">
+                  <div class="ice" v-if=" settings.ice =='yes' ">
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 5px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 35px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 65px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: -10px; bottom: 34px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 20px; bottom: 30px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 50px; bottom: 32px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 70px; bottom: 38px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                  </div>
+                  <div class="cup-beverage">
+                    <div v-if=" settings.drink == 'tea' " style="background: #ffb467; height: 100%;"></div>
+                    <div v-if=" settings.drink == 'coffee' " style="background: #85695d; height: 100%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <h1>Making {{ settings.drink }}</h1>
+          <div class="content">
+            <ul>
+              <li v-for=" step in steps ">
+                {{ step }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+        new Vue({
+            el: '#beverage-maker',
+            data: {
+              processing: true,
+              steps: [],
+              settings: {
+                drink: "",
+                milk: "yes",
+                sugar: "yes",
+                ice: "no",
+                ginger: "no",
+                totalCups: 1,
+                cupSize: 200
+              },
+              defaultConfig: {
+                drink: "tea",
+                type: "milk", // milk, black
+                ingredients: {
+                  sugar: "normal", // normal, less, no
+                  ginger: "less", // normal, less, no
+                  ice: "no" // true means hot tea
+                },
+                cups: 1,
+                cupSize: 200 // 200ml
+              },
+              ingredientsList: [
+                'water',
+                'milk',
+                'ice',
+                'sugar',
+                'ginger'
+              ],
+              formConfig: null
+            },
+            mounted: function () {
+              this.processing = false;
+              this.formConfig = this.getFormConfig();
+              this.makeTea({
+                type: "milk",
+                ingredients: {
+                  sugar: "less"
+                }
+              });
+            },
+            methods: {
+              getFormConfig: function() {
+                return {
+                  drinkOptions: {
+                    'tea': "Tea",
+                    'coffee': "Coffee"
+                  },
+                  iceOptions: {
+                    'yes': "Yes",
+                    'no': "No"
+                  },
+                  milkOptions: {
+                    'yes': "Yes",
+                    'no': "No"
+                  },
+                  sugarOptions: {
+                    'yes': "Normal",
+                    'no': "No",
+                    'less': "Less"
+                  },
+                  gingerOptions: {
+                    'yes': "Normal",
+                    'no': "No",
+                    'less': "Less"
+                  }
+                };
+              },
+              addStep: function( str ) {
+                this.steps.push( str );
+              },
+              makeTea: function ( requirements ) {
+
+                this.addStep("Making Tea");
+
+                var defaults = {
+                  type: "milk", // milk, black
+                  ingredients: {
+                    sugar: "normal", // normal, less, no
+                    ginger: "less", // normal, less, no
+                    ice: "no" // true means hot tea
+                  },
+                  cups: 1,
+                  cupSize: 200 // 200ml
+                };
+
+                this.addStep("Assume 1gm = 2ml");
+                this.addStep("Assume 1spoon = 20ml");
+
+                var teaPot = this.pot();
+                var gasStove = this.gas();
+                var waterPercentage = 0.6;
+                var icePercentage = 0;
+                var milkPercentage = 0.2;
+                var sugarQuantity = 1; // teaspoon
+                var gingerQuantiy = 10; // gram
+                var ingredientsPercentage = 0.2;
+
+                // Update requirements
+                defaults = this.mergeObjects(defaults, requirements);
+
+                if ( defaults.ingredients.ice === "yes" ) {
+                  if ( defaults.type == "black" ) {
+                    icePercentage = 0.5;
+                    waterPercentage = 0.3;
+                    milkPercentage = 0;
+                  } else {
+                    icePercentage = 0.4;
+                    waterPercentage = 0.2;
+                  }
+                } else {
+                  if ( defaults.type == "black" ) {
+                    waterPercentage = 0.8;
+                    milkPercentage = 0;
+                  } else {
+                    waterPercentage = 0.6;
+                  }
+                }
+
+                if ( defaults.ingredients.sugar === "less" ) {
+                  sugarQuantity = 0.5;
+                  waterPercentage += 0.05;
+                } else if ( defaults.ingredients.sugar === "no" ) {
+                  sugarQuantity = 0;
+                  waterPercentage += 0.1;
+                }
+
+                if ( defaults.ingredients.ginger === "less" ) {
+                  gingerQuantiy = 5;
+                  waterPercentage += 0.05;
+                } else if ( defaults.ingredients.ginger === "no" ) {
+                  gingerQuantiy = 0;
+                  waterPercentage += 0.1;
+                }
+
+                // Fix all quantities to maximum of 2 decimal points
+                waterPercentage = this.toFixedIfNecessary(waterPercentage, 2);
+                icePercentage = this.toFixedIfNecessary(icePercentage, 2);
+                milkPercentage = this.toFixedIfNecessary(milkPercentage, 2);
+                sugarQuantity = this.toFixedIfNecessary(sugarQuantity, 2);
+                gingerQuantiy = this.toFixedIfNecessary(gingerQuantiy, 2);
+                ingredientsPercentage = this.toFixedIfNecessary(ingredientsPercentage, 2);
+
+                var waterQuantity = (defaults.cups * defaults.cupSize) * waterPercentage;
+                var milkQuantity = (defaults.cups * defaults.cupSize) * milkPercentage;
+
+                teaPot.add("water", waterQuantity, "ml");
+                teaPot.putOnGas();
+
+                gasStove.on();
+
+                if ( sugarQuantity ) teaPot.add("sugar", sugarQuantity, "spoon");
+                if ( gingerQuantiy ) teaPot.add("ginger", gingerQuantiy, "gram");
+
+                if ( !milkPercentage ) teaPot.boil(15, "minutes");
+                if ( milkPercentage ) {
+                  teaPot.boil(10, "minutes");
+                  teaPot.add("milk", milkQuantity, "ml");
+                  gasStove.reduceFlame();
+                  teaPot.boil(10, "minutes");
+                }
+
+                gasStove.off();
+                teaPot.removeFromGas();
+                teaPot.pourTea();
+
+              },
+              toFixedIfNecessary: function ( value, dp ){
+                return +parseFloat(value).toFixed( dp );
+              },
+              pot: function  () {
+                var _this = this;
+                return {
+                  add: function ( ingredient, quantity, unit ) {
+                    _this.addStep("Add " + quantity + "-" + unit + " of " + ingredient + ".");
+                  },
+                  boil: function ( time, unit ) {
+                    _this.addStep("Boil for " + time + "-" + unit + ".");
+                  },
+                  putOnGas: function () {
+                    _this.addStep("Put pot on Gas.");
+                  },
+                  removeFromGas: function () {
+                    _this.addStep("Remove pot from Gas.");
+                  },
+                  pourTea: function () {
+                    _this.addStep("Pour tea in cup(s).");
+                  },
+                }
+              },
+              gas: function gas () {
+                var _this = this;
+                return {
+                  on: function () {
+                    _this.addStep("Turn on Gas.");
+                  },
+                  off: function () {
+                    _this.addStep("Turn off Gas.");
+                  },
+                  reduceFlame: function () {
+                    _this.addStep("Reduced Gas flame.");
+                  }
+                }
+              },
+              mergeObjects: function (mainObject, objectToBeMergedInMain ) {
+                for ( var i in objectToBeMergedInMain ) {
+                  if ( typeof objectToBeMergedInMain[i] === 'object' ) {
+                    for ( var j in objectToBeMergedInMain[i] ) {
+                      mainObject[i][j] = objectToBeMergedInMain[i][j];
+                    }
+                  } else {
+                    mainObject[i] = objectToBeMergedInMain[i];
+                  }
+                }
+                return mainObject;
+              }
+
+            }
+        })
+    </script>
+  </body>
+</html>
