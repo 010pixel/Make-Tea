@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tea Maker</title>
+</head>
+<body>
+
+	<h1>Make Tea</h1>
+
+<script type="text/javascript">
+	/**
+	 * Features
+	 * - Type (milk tea, black tea)
+	 * - Ingredients + Quantity (sugar, ginger)
+	 * - Cups
+	 * - Cup Size
+	 */
+
+	 makeTea({
+	 	type: "milk",
+	 	ingredients: {
+	 		sugar: "less"
+	 	}
+	 });
+
+	 function pot () {
+	 	return {
+	 		add: function ( ingredient, quantity, unit ) {
+	 			console.log("Add " + quantity + "-" + unit + " of " + ingredient + ".");
+	 		},
+	 		boil: function ( time, unit ) {
+	 			console.log("Boil for " + time + "-" + unit + ".");
+	 		},
+	 		putOnGas: function () {
+	 			console.log("Put pot on Gas.");
+	 		},
+	 		removeFromGas: function () {
+	 			console.log("Remove pot from Gas.");
+	 		},
+	 		pourTea: function () {
+	 			console.log("Pour tea in cup(s).");
+	 		},
+	 	}
+	 }
+
+	 function gas () {
+	 	return {
+	 		on: function () {
+	 			console.log("Turn on Gas.");
+	 		},
+	 		off: function () {
+	 			console.log("Turn off Gas.");
+	 		},
+	 		reduceFlame: function () {
+	 			console.log("Reduced Gas flame.");
+	 		}
+	 	}
+	 }
+
+	 function makeTea ( requirements ) {
+
+	 	console.log("Making Tea");
+
+	 	var defaults = {
+	 		type: "milk", // milk, black
+	 		ingredients: {
+	 			sugar: "normal", // normal, less, no
+	 			ginger: "less", // normal, less, no
+	 			ice: "no" // true means hot tea
+	 		},
+	 		cups: 1,
+	 		cupSize: 200 // 200ml
+	 	};
+
+	 	console.log("Assume 1gm = 2ml");
+	 	console.log("Assume 1spoon = 20ml");
+
+	 	var teaPot = pot();
+	 	var gasStove = gas();
+	 	var waterPercentage = 0.6;
+	 	var icePercentage = 0;
+	 	var milkPercentage = 0.2;
+	 	var sugarQuantity = 1; // teaspoon
+	 	var gingerQuantiy = 10; // gram
+	 	var ingredientsPercentage = 0.2;
+
+	 	// Update requirements
+	 	for ( var i in requirements ) {
+	 		if ( typeof requirements[i] === 'object' ) {
+	 			for ( var j in requirements[i] ) {
+	 				defaults[i][j] = requirements[i][j];
+	 			}
+	 		} else {
+		 		defaults[i] = requirements[i];
+	 		}
+	 	}
+
+ 		if ( defaults.ingredients.ice === "yes" ) {
+ 			if ( defaults.type == "black" ) {
+	 			icePercentage = 0.5;
+	 			waterPercentage = 0.3;
+	 			milkPercentage = 0;
+ 			} else {
+	 			icePercentage = 0.4;
+	 			waterPercentage = 0.2;
+ 			}
+ 		} else {
+ 			if ( defaults.type == "black" ) {
+	 			waterPercentage = 0.8;
+	 			milkPercentage = 0;
+ 			} else {
+	 			waterPercentage = 0.6;
+ 			}
+ 		}
+
+ 		if ( defaults.ingredients.sugar === "less" ) {
+ 			sugarQuantity = 0.5;
+ 			waterPercentage += 0.05;
+ 		} else if ( defaults.ingredients.sugar === "no" ) {
+ 			sugarQuantity = 0;
+ 			waterPercentage += 0.1;
+ 		}
+
+ 		if ( defaults.ingredients.ginger === "less" ) {
+ 			gingerQuantiy = 5;
+ 			waterPercentage += 0.05;
+ 		} else if ( defaults.ingredients.ginger === "no" ) {
+ 			gingerQuantiy = 0;
+ 			waterPercentage += 0.1;
+ 		}
+
+ 		// Fix all quantities to maximum of 2 decimal points
+ 		waterPercentage = toFixedIfNecessary(waterPercentage, 2);
+	 	icePercentage = toFixedIfNecessary(icePercentage, 2);
+	 	milkPercentage = toFixedIfNecessary(milkPercentage, 2);
+	 	sugarQuantity = toFixedIfNecessary(sugarQuantity, 2);
+	 	gingerQuantiy = toFixedIfNecessary(gingerQuantiy, 2);
+	 	ingredientsPercentage = toFixedIfNecessary(ingredientsPercentage, 2);
+
+	 	var waterQuantity = (defaults.cups * defaults.cupSize) * waterPercentage;
+	 	var milkQuantity = (defaults.cups * defaults.cupSize) * milkPercentage;
+
+	 	teaPot.add("water", waterQuantity, "ml");
+	 	teaPot.putOnGas();
+
+	 	gasStove.on();
+
+	 	if ( sugarQuantity ) teaPot.add("sugar", sugarQuantity, "spoon");
+	 	if ( gingerQuantiy ) teaPot.add("ginger", gingerQuantiy, "gram");
+
+	 	if ( !milkPercentage ) teaPot.boil(15, "minutes");
+	 	if ( milkPercentage ) {
+	 		teaPot.boil(10, "minutes");
+	 		teaPot.add("milk", milkQuantity, "ml");
+	 		gasStove.reduceFlame();
+	 		teaPot.boil(10, "minutes");
+	 	}
+
+	 	gasStove.off();
+ 		teaPot.removeFromGas();
+		teaPot.pourTea();
+
+	 }
+
+	function toFixedIfNecessary( value, dp ){
+		return +parseFloat(value).toFixed( dp );
+	}
+</script>
+
+</body>
+</html>
