@@ -105,7 +105,7 @@
 
               <div class="col s12">
                 <br />
-                <a class="waves-effect waves-light btn btn-small"><i class="fas fa-flask"></i>Make</a>
+                <a class="waves-effect waves-light btn btn-small"><i class="material-icons left">local_drink</i>Make</a>
               </div>
 
             </div>          
@@ -122,6 +122,8 @@
             Quantity in %: {{beverageQuantityPerCupInPercentage}}% - {{ totalQuantity }} ml
 
             <br />
+
+            <span class="material-icons">shopping_cart</span>
 
             <ul class="collection">
               <li class="collection-item" v-for=" (i, k) in ingredientsQuantity " v-if=" i.quantityTotal "><span style="font-weight: bold;">{{ k }}:</span> {{ i.quantityTotal }} {{ i.unit }}, {{ i.mlTotal }}ml</li>
