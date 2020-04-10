@@ -3,226 +3,168 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello Drink Maker!</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   </head>
   <body>
-    <style type="text/css">
-      h1 {
-        text-transform: uppercase;
-      }
-      .cup {
-        height: 100px;
-        border: 2px solid #999;
-        position: relative;
-        max-width: 100px;
-        box-shadow: 2px 2px 10px #ccc;
-      }
-      .cup:after {
-        content: '';
-        display: block;
-        border: 5px solid #000;
-        position: absolute;
-        left: 99%;
-        width: 40px;
-        max-width: 60%;
-        height: 50px;
-        border-radius: 40%;
-      }
-      .cup .cup-content {
-        overflow: hidden;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
-      .cup .cup-content .ice {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translate(-50%, 0);
-        width: 100px;
-        border: 1px solid #f00;
-      }
-      .cup-beverage {
-        height: 10%;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-      }
-
-      .cube {
-        position:absolute; left:50%; top:50%;
-        width:100px; height:100px;
-        transform-style:preserve-3d;
-        transform:rotateX(-30deg) rotateY(35deg) translate(-50%, -50%);
-      }
-      .cube > div {
-        position:absolute; left:50%; top:50%;
-        transform-style:preserve-3d;
-      }
-      .cube > div > div {
-        position:absolute; left:50%; top:50%;
-        width:100px; height:100px; border-radius:calc(100px/12);
-        background:rgba(221,221,221,0.2);
-        background:linear-gradient(rgba(237,237,237,0.2),rgba(153,153,153,0.1));
-        box-shadow:0 0 4px rgba(255,255,255,0.2),inset 0 0 4px rgba(255,255,255,0.2);
-      }
-      .cube > div > div:nth-child(1) {transform:translate3d(0,0,50px);}
-      .cube > div > div:nth-child(2) {transform:rotateX(90deg) translate3d(0,0,50px);}
-      .cube > div > div:nth-child(3) {transform:rotateX(180deg) translate3d(0,0,50px);}
-      .cube > div > div:nth-child(4) {transform:rotateX(270deg) translate3d(0,0,50px);}
-      .cube > div > div:nth-child(5) {transform:rotateY(90deg) translate3d(0,0,50px);}
-      .cube > div > div:nth-child(6) {transform:rotateY(-90deg) translate3d(0,0,50px);}      
-    </style>
 
     <div id="beverage-maker" class="container" v-show=" !processing " style="display: none;">
-{{formConfig}}
-      <div class="columns">
-        <div class="column">
 
-          <div class="form-fields" v-if=" formConfig ">
+      <h1>Drink Tutor</h1>
 
-            <div class="field">
-              <label class="label">Drink</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.drink">
-                    <option value="">Select</option>
-                    <option v-for="(value, key) in formConfig.drinkOptions" v-bind:value="key">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
+      <div class="container">
+        <div class="row">
+
+          <div class="col s12">
+
+            <div class="row" v-if=" formConfig ">
+
+              <div class="col s12">
+                <h5>Start</h5>
+                <hr />
               </div>
-            </div>
 
-            <div class="field" v-if=" settings.drink ">
-              <label class="label">Total Cup(s)</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.totalCups">
-                    <option value="">Select</option>
-                    <option v-for="num in [1,2,3,4,5,6,7,8,9,10]" v-bind:value="num">
-                      {{ num }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col s6 m4 l2">
+                <br />
+                <label class="label">Drink</label>
+                <select class="browser-default" v-model="settings.drink">
+                  <option value="">Select</option>
+                  <option v-for="(value, key) in formConfig.drinkOptions" v-bind:value="key">
+                    {{ value }}
+                  </option>
+                </select>
               </div>
-            </div>
 
-            <div class="field" v-if=" settings.drink ">
-              <label class="label">Cup Size</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.cupSize">
-                    <option value="">Select</option>
-                    <option v-for="num in [150,200,250,300]" v-bind:value="num">
-                      {{ num }}ml
-                    </option>
-                  </select>
-                </div>
+              <div class="col s6 m4 l2" v-if=" settings.drink ">
+                <br />
+                <label class="label">Total Cup(s)</label>
+                <select class="browser-default" v-model="settings.totalCups">
+                  <option value="">Select</option>
+                  <option v-for="num in [1,2,3,4,5,6,7,8,9,10]" v-bind:value="num">
+                    {{ num }}
+                  </option>
+                </select>
               </div>
-            </div>
 
-            <div class="field" v-if=" settings.drink ">
-              <label class="label">Ice?</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.ice">
-                    <option value="">Select</option>
-                    <option v-for="(value, key) in formConfig.iceOptions" v-bind:value="key">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col s6 m4 l2" v-if=" settings.drink ">
+                <br />
+                <label class="label">Cup Size</label>
+                <select class="browser-default" v-model="settings.cupSize">
+                  <option value="">Select</option>
+                  <option v-for="num in [200,300,400]" v-bind:value="num">
+                    {{ num }}ml
+                  </option>
+                </select>
               </div>
-            </div>
 
-            <div class="field" v-if=" settings.drink ">
-              <label class="label">Milk</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.milk">
-                    <option value="">Select</option>
-                    <option v-for="(value, key) in formConfig.milkOptions" v-bind:value="key">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col s6 m4 l2" v-if=" settings.drink ">
+                <br />
+                <label class="label">Ice?</label>
+                <select class="browser-default" v-model="settings.ice">
+                  <option value="">Select</option>
+                  <option v-for="(value, key) in formConfig.iceOptions" v-bind:value="key">
+                    {{ value }}
+                  </option>
+                </select>
               </div>
-            </div>
 
-            <div class="field" v-if=" settings.drink ">
-              <label class="label">Sugar</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.sugar">
-                    <option value="">Select</option>
-                    <option v-for="(value, key) in formConfig.sugarOptions" v-bind:value="key">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col s6 m4 l2" v-if=" settings.drink ">
+                <br />
+                <label class="label">Milk</label>
+                <select class="browser-default" v-model="settings.milk">
+                  <option value="">Select</option>
+                  <option v-for="(value, key) in formConfig.milkOptions" v-bind:value="key">
+                    {{ value }}
+                  </option>
+                </select>
               </div>
-            </div>
 
-            <div class="field" v-if=" settings.drink == 'tea' ">
-              <label class="label">Ginger</label>
-              <div class="control">
-                <div class="select">
-                  <select v-model="settings.ginger">
-                    <option value="">Select</option>
-                    <option v-for="(value, key) in formConfig.gingerOptions" v-bind:value="key">
-                      {{ value }}
-                    </option>
-                  </select>
-                </div>
+              <div class="col s6 m4 l2" v-if=" settings.drink ">
+                <br />
+                <label class="label">Sugar</label>
+                <select class="browser-default" v-model="settings.sugar">
+                  <option value="">Select</option>
+                  <option v-for="(value, key) in formConfig.sugarOptions" v-bind:value="key">
+                    {{ value }}
+                  </option>
+                </select>
               </div>
-            </div>
 
+              <div class="col s6 m4 l2" v-if=" settings.drink == 'tea' ">
+                <br />
+                <label class="label">Ginger</label>
+                <select class="browser-default" v-model="settings.ginger">
+                  <option value="">Select</option>
+                  <option v-for="(value, key) in formConfig.gingerOptions" v-bind:value="key">
+                    {{ value }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col s12">
+                <br />
+                <a class="waves-effect waves-light btn btn-small"><i class="fas fa-flask"></i>Make</a>
+              </div>
+
+            </div>          
           </div>
-          
-        </div>
-        <div class="column">
-          <hr />
-          {{ settings }}
-          <hr />
-          <button class="button is-primary is-rounded">
-            <span>Make</span>
-            <span class="icon"><i class="fas fa-flask"></i></span>
-          </button>
-          <hr />
-          <div class="columns">
-            <div class="column" v-for=" cup in settings.totalCups ">
-              <div class="cup">
-                <div class="cup-content">
-                  <div class="ice" v-if=" settings.ice =='yes' ">
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 5px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 35px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 65px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: -10px; bottom: 34px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 20px; bottom: 30px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 50px; bottom: 32px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                    <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 70px; bottom: 38px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
-                  </div>
-                  <div class="cup-beverage">
-                    <div v-if=" settings.drink == 'tea' " style="background: #ffb467; height: 100%;"></div>
-                    <div v-if=" settings.drink == 'coffee' " style="background: #85695d; height: 100%;"></div>
+
+          <div class="col s12 m6">
+
+            <h5>Ingredients:</h5>
+
+            <hr />
+
+            water: {{ getWaterInMiliLitre }}ml <br />
+            Liquid: {{ effectiveBeverageSizePerCup }}ml <br />
+            Quantity in %: {{beverageQuantityPerCupInPercentage}}% - {{ totalQuantity }} ml
+
+            <br />
+
+            <ul class="collection">
+              <li class="collection-item" v-for=" (i, k) in ingredientsQuantity " v-if=" i.quantityTotal "><span style="font-weight: bold;">{{ k }}:</span> {{ i.quantityTotal }} {{ i.unit }}, {{ i.mlTotal }}ml</li>
+            </ul>
+
+            <br />
+
+            <div class="columns">
+              <div class="column" v-for=" cup in settings.totalCups ">
+                <div class="cup">
+                  <div class="cup-content">
+
+                    <div class="cup-beverage" :style="{ height: beverageQuantityPerCupInPercentage + '%', opacity: ['yes','less'].indexOf(settings.ice) > -1 ? 0.7 : 1}">
+                      <div v-if=" settings.drink == 'tea' " style="background: #ffb467; height: 100%;"></div>
+                      <div v-if=" settings.drink == 'coffee' " style="background: #85695d; height: 100%;"></div>
+                    </div>
+
+                    <div class="ice" v-if=" ['yes','less'].indexOf(settings.ice) > -1 ">
+                      <div class="cube-container" v-if=" ['yes'].indexOf(settings.ice) > -1 " style="transform: scale(0.3); position: absolute; left: 5px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                      <div class="cube-container" v-if=" ['yes'].indexOf(settings.ice) > -1 " style="transform: scale(0.3); position: absolute; left: 35px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                      <div class="cube-container" v-if=" ['yes'].indexOf(settings.ice) > -1 " style="transform: scale(0.3); position: absolute; left: 65px; bottom: 55px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                      <div class="cube-container" style="transform: scale(0.3); position: absolute; left: -10px; bottom: 34px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                      <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 20px; bottom: 30px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                      <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 50px; bottom: 32px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                      <div class="cube-container" style="transform: scale(0.3); position: absolute; left: 70px; bottom: 38px;"><div class="cube"><div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
+                    </div>
+
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <hr />
-          <h1>Making {{ settings.drink }}</h1>
-          <div class="content">
-            <ul>
-              <li v-for=" step in steps ">
+
+          <div class="col s12 m6">
+            <h5>Making {{ settings.drink }}</h5>
+            <hr />
+            <ul class="collection">
+              <li class="collection-item" v-for=" step in steps ">
                 {{ step }}
               </li>
             </ul>
           </div>
+
         </div>
       </div>
 
@@ -235,7 +177,7 @@
               processing: true,
               steps: [],
               settings: {
-                drink: "",
+                drink: "tea",
                 milk: "yes",
                 sugar: "yes",
                 ice: "no",
@@ -243,17 +185,8 @@
                 totalCups: 1,
                 cupSize: 200
               },
-              defaultConfig: {
-                drink: "tea",
-                type: "milk", // milk, black
-                ingredients: {
-                  sugar: "normal", // normal, less, no
-                  ginger: "less", // normal, less, no
-                  ice: "no" // true means hot tea
-                },
-                cups: 1,
-                cupSize: 200 // 200ml
-              },
+              baseCupSize: 100,
+              evaporationProportion: 0.1,
               ingredientsList: [
                 'water',
                 'milk',
@@ -266,12 +199,48 @@
             mounted: function () {
               this.processing = false;
               this.formConfig = this.getFormConfig();
-              this.makeTea({
-                type: "milk",
-                ingredients: {
-                  sugar: "less"
-                }
-              });
+              this.makeTea();
+            },
+            computed: {
+              effectiveBeverageSizePerCup: function() {
+                return this.toFixedIfNecessary(this.settings.cupSize - this.iceQuantityInMiliLitre, 2);
+              },
+              iceQuantityInMiliLitre: function() {
+                let ice = 0;
+                switch ( this.settings.ice ) {
+                  case 'yes':
+                    ice = 0.6;
+                    break;
+                  case 'no':
+                    ice = 0;
+                    break;
+                  case 'less':
+                    ice = 0.4;
+                    break;
+                  default:
+                    ice = 0;
+                    break;
+                };
+                let iceQuantityInMiliLitre = ice * this.settings.cupSize;
+                return this.toFixedIfNecessary(iceQuantityInMiliLitre, 2);
+              },
+              beverageQuantityPerCupInPercentage: function() {
+                return this.toFixedIfNecessary(this.totalQuantityPerCup * 100 / this.settings.cupSize, 2);
+              },
+              ingredientsQuantity: function() {
+                return this.getIngredientQuantities(this.settings);
+              },
+              totalQuantityPerCup: function() {
+                return this.toFixedIfNecessary(this.getTotalQuantityPerCup(), 2);
+              },
+              totalQuantity: function() {
+                return this.toFixedIfNecessary(this.getTotalQuantityPerCup() * this.settings.totalCups, 2);
+              },
+              getWaterInMiliLitre: function() {
+                let cupSizeIncludingEvaporation = this.settings.cupSize * (1 + this.evaporationProportion);
+                let waterPerCup = cupSizeIncludingEvaporation - this.totalQuantityPerCup;
+                return this.toFixedIfNecessary(waterPerCup * this.settings.totalCups, 2);
+              },
             },
             methods: {
               getFormConfig: function() {
@@ -282,11 +251,14 @@
                   },
                   iceOptions: {
                     'yes': "Yes",
-                    'no': "No"
+                    'no': "No",
+                    'less': "Less",
                   },
                   milkOptions: {
                     'yes': "Yes",
-                    'no': "No"
+                    'no': "No",
+                    'less': "Less",
+                    'more': "More"
                   },
                   sugarOptions: {
                     'yes': "Normal",
@@ -300,23 +272,159 @@
                   }
                 };
               },
+              getIngredientQuantities: function( requirements ) {
+                let ingredients = this.getIngredientQuantitiesPerCup( requirements );
+
+                for ( let ingredientName in ingredients ) {
+                  ingredients[ingredientName]['ml'] = this.getQuantityInMiliLitre(ingredients[ingredientName], ingredientName);
+                  ingredients[ingredientName]['mlTotal'] = this.toFixedIfNecessary(ingredients[ingredientName]['ml'] * this.settings.totalCups,2);;
+                  ingredients[ingredientName]['quantityTotal'] = this.toFixedIfNecessary(ingredients[ingredientName]['quantity'] * this.settings.totalCups,2);
+                }
+
+                return ingredients;
+
+              },
+              getIngredientQuantitiesPerCup: function( requirements ) {
+
+                var ingredients = {
+                  'sugar': {
+                    unit: 'spoon',
+                    quantity: 0
+                  },
+                  'ginger': {
+                    unit: 'spoon',
+                    quantity: 0
+                  },
+                  'ice': {
+                    unit: 'cup',
+                    quantity: 0
+                  },
+                  'teaLeaf': {
+                    unit: 'spoon',
+                    quantity: 0
+                  },
+                  'coffeePowder': {
+                    unit: 'spoon',
+                    quantity: 0
+                  },
+                  'milk': {
+                    unit: 'cup',
+                    quantity: 0
+                  }
+                };
+
+                switch ( requirements.sugar ) {
+                  case 'yes':
+                    ingredients.sugar.quantity = 1;
+                    break;
+                  case 'no':
+                    ingredients.sugar.quantity = 0;
+                    break;
+                  case 'less':
+                    ingredients.sugar.quantity = 0.5;
+                    break;
+                  default:
+                    ingredients.sugar.quantity = 1;
+                    break;
+                }
+
+                switch ( requirements.ice ) {
+                  case 'yes':
+                    ingredients.ice.quantity = 0.6;
+                    break;
+                  case 'no':
+                    ingredients.ice.quantity = 0;
+                    break;
+                  case 'less':
+                    ingredients.ice.quantity = 0.4;
+                    break;
+                  default:
+                    ingredients.ice.quantity = 0;
+                    break;
+                }
+
+                switch ( requirements.milk ) {
+                  case 'yes':
+                    ingredients.milk.quantity = 0.2;
+                    break;
+                  case 'no':
+                    ingredients.milk.quantity = 0;
+                    break;
+                  case 'less':
+                    ingredients.milk.quantity = 0.1;
+                    break;
+                  case 'more':
+                    ingredients.milk.quantity = 0.3;
+                    break;
+                  default:
+                    ingredients.milk.quantity = 0;
+                    break;
+                }
+
+                if ( requirements.drink == 'tea' ) {
+
+                  ingredients.teaLeaf.quantity = 1;
+
+                  switch ( requirements.ginger ) {
+                    case 'yes':
+                      ingredients.ginger.quantity = 1;
+                      break;
+                    case 'no':
+                      ingredients.ginger.quantity = 0;
+                      break;
+                    case 'less':
+                      ingredients.ginger.quantity = 0.5;
+                      break;
+                    default:
+                      ingredients.ginger.quantity = 1;
+                      break;
+                  }
+
+                } else if ( requirements.drink == 'coffee' ) {
+
+                  ingredients.coffeePowder.quantity = 1;
+
+                }
+
+                for ( let ingredientName in ingredients ) {
+                  let quantityMultiplier = (ingredientName == 'ice') ? 1 : (this.effectiveBeverageSizePerCup / this.baseCupSize);
+                  ingredients[ingredientName].quantity = ingredients[ingredientName].quantity * quantityMultiplier;
+                }
+
+                return ingredients;
+              },
+              getQuantityInMiliLitre: function( ingredientConfig, ingredientName ) {
+                var unitToMiliLitreMapping = {
+                  spoon: 5,
+                  gm: 2,
+                  cup: ingredientName == 'ice' ? this.settings.cupSize : this.effectiveBeverageSizePerCup
+                };
+                let multiplier = unitToMiliLitreMapping[ingredientConfig.unit];
+                let ingredientQuantity = ingredientConfig.quantity * multiplier;
+                return ingredientQuantity;
+              },
+              getTotalQuantityPerCup: function() {
+
+                let ingredientsQuantities = this.ingredientsQuantity;
+                let totalQuantity = 0;
+
+                for ( let ingredient in ingredientsQuantities ) {
+                  totalQuantity += ingredientsQuantities[ingredient]['ml'];
+                }
+
+                return totalQuantity;
+
+              },
               addStep: function( str ) {
                 this.steps.push( str );
               },
-              makeTea: function ( requirements ) {
+              makeTea: function () {
 
                 this.addStep("Making Tea");
 
-                var defaults = {
-                  type: "milk", // milk, black
-                  ingredients: {
-                    sugar: "normal", // normal, less, no
-                    ginger: "less", // normal, less, no
-                    ice: "no" // true means hot tea
-                  },
-                  cups: 1,
-                  cupSize: 200 // 200ml
-                };
+                var defaults = this.ingredientsQuantity;
+
+                return;
 
                 this.addStep("Assume 1gm = 2ml");
                 this.addStep("Assume 1spoon = 20ml");
@@ -329,9 +437,6 @@
                 var sugarQuantity = 1; // teaspoon
                 var gingerQuantiy = 10; // gram
                 var ingredientsPercentage = 0.2;
-
-                // Update requirements
-                defaults = this.mergeObjects(defaults, requirements);
 
                 if ( defaults.ingredients.ice === "yes" ) {
                   if ( defaults.type == "black" ) {
